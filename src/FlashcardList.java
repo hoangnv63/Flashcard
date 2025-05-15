@@ -3,18 +3,6 @@ public class FlashcardList {
     private FlashcardNode tail;
     private int size = 0;
 
-    public void add(Flashcard flashcard) {
-        FlashcardNode node = new FlashcardNode(flashcard);
-        if (head == null) {
-            head = tail = node;
-        } else {
-            tail.next = node;
-            node.prev = tail;
-            tail = node;
-        }
-        size++;
-    }
-
     public FlashcardNode getHead() {
         return head;
     }
