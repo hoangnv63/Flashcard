@@ -46,6 +46,8 @@ public class FlashcardUI {
 
         JButton searchButton = new JButton("Search");
         searchButton.setBounds(820, 80, 120, 40);
+        searchButton.setBackground(Color.DARK_GRAY);
+        searchButton.setForeground(Color.WHITE);
         frame.add(searchButton);
     }
 
@@ -56,14 +58,21 @@ public class FlashcardUI {
         for (int i = 0; i < labels.length; i++) {
             JButton button = new JButton(labels[i]);
             button.setBounds(50, 150 + i * 60, 200, 50);
-            button.setBackground(colors[i]);
+            button.setBackground(Color.DARK_GRAY);
+            button.setForeground(Color.WHITE);
             frame.add(button);
+
+            switch (labels[i]) {
+                case "Add card":
+                    button.addActionListener(e -> FlashcardActions.addCard(frame, flashcardList, this));
+                    break;
+            }
         }
     }
 
     private void setupCardDisplay() {
         cardLabel = new JLabel("", JLabel.CENTER);
-        cardLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        cardLabel.setFont(new Font("Lora", Font.PLAIN, 24));
         cardLabel.setOpaque(true);
         cardLabel.setBackground(Color.WHITE);
         cardLabel.setBounds(300, 150, 700, 400);
@@ -106,7 +115,7 @@ public class FlashcardUI {
         frame.add(indexLabel);
     }
 
-    private void updateCardDisplay() {
+    public void updateCardDisplay() {
         if (currentNode == null) {
             cardLabel.setText("No cards available");
             indexLabel.setText("0/0");
@@ -114,11 +123,19 @@ public class FlashcardUI {
         }
 
         Flashcard card = currentNode.data;
-        cardLabel.setText("<html><body style='width: 680px; text-align: center;'>" +
+        cardLabel.setText("<html><body style='width: 420px; text-align: center;'>" +
                 (showingKey ? card.getKey() : card.getDescription()) +
                 "</body></html>");
 
         int index = flashcardList.indexOf(currentNode);
         indexLabel.setText((index + 1) + "/" + flashcardList.getSize());
+    }
+
+    public FlashcardNode getCurrentNode() {
+        return currentNode;
+    }
+
+    public void setCurrentNode(FlashcardNode node) {
+        currentNode = node;
     }
 }
