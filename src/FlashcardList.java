@@ -37,4 +37,22 @@ public class FlashcardList {
         }
         size++;
     }
+
+    public void delete(FlashcardNode node) {
+        if (node == null) return;
+
+        if (node == head && node == tail) {
+            head = tail = null;
+        } else if (node == head) {
+            head = node.next;
+            if (head != null) head.prev = null;
+        } else if (node == tail) {
+            tail = node.prev;
+            if (tail != null) tail.next = null;
+        } else {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+        size--;
+    }
 }
