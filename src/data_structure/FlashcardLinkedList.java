@@ -1,4 +1,9 @@
-public class FlashcardList {
+package data_structure;
+
+import model.Flashcard;
+import model.FlashcardNode;
+
+public class FlashcardLinkedList {
     private FlashcardNode head;
     private FlashcardNode tail;
     private int size = 0;
@@ -13,6 +18,16 @@ public class FlashcardList {
 
     public int getSize() {
         return size;
+    }
+
+    public FlashcardNode getPrev(FlashcardNode current) {
+        if (current == null) return null;
+        return current.prev;
+    }
+
+    public FlashcardNode getNext(FlashcardNode current) {
+        if (current == null) return null;
+        return current.next;
     }
 
     public int indexOf(FlashcardNode node) {

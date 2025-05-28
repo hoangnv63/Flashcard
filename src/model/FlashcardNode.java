@@ -1,7 +1,9 @@
+package model;
+
 public class FlashcardNode {
-    Flashcard data;
-    FlashcardNode prev;
-    FlashcardNode next;
+    public Flashcard data;
+    public FlashcardNode prev;
+    public FlashcardNode next;
 
     public FlashcardNode(Flashcard data) {
         this.data = data;

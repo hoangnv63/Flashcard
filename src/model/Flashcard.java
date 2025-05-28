@@ -1,3 +1,5 @@
+package model;
+
 public class Flashcard {
     private String key;
     private String description;
@@ -15,7 +17,7 @@ public class Flashcard {
         return description;
     }
 
-    public void setKey(String newKey) {
+    public void setKey(String key) {
         this.key = key;
     }
 

@@ -1,3 +1,9 @@
+package ui;
+
+import data_structure.FlashcardLinkedList;
+import model.Flashcard;
+import model.FlashcardNode;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,7 +15,7 @@ public class FlashcardUI {
     private JButton prevButton, nextButton;
     private boolean showingKey = true;
 
-    private final FlashcardList flashcardList = new FlashcardList();
+    private final FlashcardLinkedList flashcardLinkedList = new FlashcardLinkedList();
     private FlashcardNode currentNode;
 
     public void initUI() {
@@ -36,11 +42,11 @@ public class FlashcardUI {
         setupNavigation();
 
         // Sample flashcards
-        flashcardList.add(new Flashcard("Java", "A high-level programming language."));
-        flashcardList.add(new Flashcard("Swing", "Java GUI toolkit."));
-        flashcardList.add(new Flashcard("Polymorphism", "Ability to take many forms."));
+        flashcardLinkedList.add(new Flashcard("Java", "A high-level programming language."));
+        flashcardLinkedList.add(new Flashcard("Swing", "Java GUI toolkit."));
+        flashcardLinkedList.add(new Flashcard("Polymorphism", "Ability to take many forms."));
 
-        currentNode = flashcardList.getHead();
+        currentNode = flashcardLinkedList.getHead();
         updateCardDisplay();
 
         frame.setVisible(true);
@@ -77,13 +83,13 @@ public class FlashcardUI {
 
             switch (labels[i]) {
                 case "Add card":
-                    button.addActionListener(e -> FlashcardActions.addCard(frame, flashcardList, this));
+                    button.addActionListener(e -> FlashcardActions.addCard(frame, flashcardLinkedList, this));
                     break;
                 case "Delete card":
-                    button.addActionListener(e -> FlashcardActions.deleteCard(frame, flashcardList, this));
+                    button.addActionListener(e -> FlashcardActions.deleteCard(frame, flashcardLinkedList, this));
                     break;
                 case "Edit card":
-                    button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardList, this));
+                    button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardLinkedList, this));
                     break;
 
             }
@@ -110,8 +116,9 @@ public class FlashcardUI {
         prevButton = new JButton("←");
         prevButton.setBounds(400, 580, 100, 40);
         prevButton.addActionListener(e -> {
-            if (currentNode != null && currentNode.prev != null) {
-                currentNode = currentNode.prev;
+            FlashcardNode prevNode = flashcardLinkedList.getPrev(currentNode);
+            if (prevNode != null) {
+                currentNode = prevNode;
                 showingKey = true;
                 updateCardDisplay();
             }
@@ -121,8 +128,9 @@ public class FlashcardUI {
         nextButton = new JButton("→");
         nextButton.setBounds(700, 580, 100, 40);
         nextButton.addActionListener(e -> {
-            if (currentNode != null && currentNode.next != null) {
-                currentNode = currentNode.next;
+            FlashcardNode nextNode = flashcardLinkedList.getNext(currentNode);
+            if (nextNode != null) {
+                currentNode = nextNode;
                 showingKey = true;
                 updateCardDisplay();
             }
@@ -147,8 +155,8 @@ public class FlashcardUI {
                 (showingKey ? card.getKey() : card.getDescription()) +
                 "</body></html>");
 
-        int index = flashcardList.indexOf(currentNode);
-        indexLabel.setText((index + 1) + "/" + flashcardList.getSize());
+        int index = flashcardLinkedList.indexOf(currentNode);
+        indexLabel.setText((index + 1) + "/" + flashcardLinkedList.getSize());
     }
 
     public FlashcardNode getCurrentNode() {
