@@ -82,6 +82,9 @@ public class FlashcardUI {
                 case "Delete card":
                     button.addActionListener(e -> FlashcardActions.deleteCard(frame, flashcardList, this));
                     break;
+                case "Edit card":
+                    button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardList, this));
+                    break;
 
             }
         }

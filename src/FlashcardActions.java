@@ -84,4 +84,71 @@ public class FlashcardActions {
         ui.setCurrentNode(nextNode);
         ui.updateCardDisplay();
     }
+
+    public static void editCard(JFrame parentFrame, FlashcardList list, FlashcardUI ui) {
+        FlashcardNode current = ui.getCurrentNode();
+        if (current == null) {
+            JOptionPane.showMessageDialog(parentFrame, "No card to edit.");
+            return;
+        }
+
+        JDialog dialog = new JDialog(parentFrame, "Edit card", true);
+        dialog.setSize(400, 500);
+        dialog.setLayout(null);
+        dialog.setLocationRelativeTo(parentFrame);
+        dialog.getContentPane().setBackground(Color.LIGHT_GRAY);
+
+        JLabel titleLabel = new JLabel("Edit card", JLabel.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setBounds(50, 20, 300, 40);
+        dialog.add(titleLabel);
+
+        JLabel keyLabel = new JLabel("Key");
+        keyLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        keyLabel.setBounds(50, 80, 100, 30);
+        dialog.add(keyLabel);
+
+        JTextArea keyField = new JTextArea(current.data.getKey());
+        keyField.setLineWrap(true);
+        keyField.setWrapStyleWord(true);
+        JScrollPane keyScroll = new JScrollPane(keyField);
+        keyScroll.setBounds(50, 110, 300, 80);
+        dialog.add(keyScroll);
+
+        JLabel descLabel = new JLabel("Description");
+        descLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        descLabel.setBounds(50, 200, 150, 30);
+        dialog.add(descLabel);
+
+        JTextArea descField = new JTextArea(current.data.getDescription());
+        descField.setLineWrap(true);
+        descField.setWrapStyleWord(true);
+        JScrollPane descScroll = new JScrollPane(descField);
+        descScroll.setBounds(50, 230, 300, 120);
+        dialog.add(descScroll);
+
+        JButton saveButton = new JButton("Save");
+        saveButton.setBounds(150, 370, 100, 40);
+        saveButton.setBackground(Color.DARK_GRAY);
+        saveButton.setForeground(Color.WHITE);
+        saveButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        dialog.add(saveButton);
+
+        saveButton.addActionListener(e -> {
+            String newKey = keyField.getText().trim();
+            String newDesc = descField.getText().trim();
+
+            if (newKey.isEmpty() || newDesc.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Both fields must be filled in.");
+                return;
+            }
+
+            current.data.setKey(newKey);
+            current.data.setDescription(newDesc);
+            ui.updateCardDisplay();
+            dialog.dispose();
+        });
+
+        dialog.setVisible(true);
+    }
 }

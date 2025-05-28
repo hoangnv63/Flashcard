@@ -1,6 +1,6 @@
 public class Flashcard {
-    private final String key;
-    private final String description;
+    private String key;
+    private String description;
 
     public Flashcard(String key, String description) {
         this.key = key;
@@ -13,5 +13,13 @@ public class Flashcard {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setKey(String newKey) {
+        this.key = key;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
