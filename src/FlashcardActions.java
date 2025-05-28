@@ -1,20 +1,68 @@
 import javax.swing.*;
+import java.awt.*;
 
 public class FlashcardActions {
-    public static void addCard(JFrame frame, FlashcardList list, FlashcardUI ui) {
-        String key = JOptionPane.showInputDialog(frame, "Enter key:");
-        if (key == null || key.trim().isEmpty()) return;
+    public static void addCard(JFrame parentFrame, FlashcardList list, FlashcardUI ui) {
+        JDialog dialog = new JDialog(parentFrame, "Add a new card", true);
+        dialog.setSize(400, 500);
+        dialog.setLayout(null);
+        dialog.setLocationRelativeTo(parentFrame);
+        dialog.getContentPane().setBackground(Color.LIGHT_GRAY);
 
-        String desc = JOptionPane.showInputDialog(frame, "Enter description:");
-        if (desc == null || desc.trim().isEmpty()) return;
+        JLabel titleLabel = new JLabel("Add a new card", JLabel.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setBounds(50, 20, 300, 40);
+        dialog.add(titleLabel);
 
-        list.add(new Flashcard(key, desc));
+        JLabel keyLabel = new JLabel("Key");
+        keyLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        keyLabel.setBounds(50, 80, 100, 30);
+        dialog.add(keyLabel);
 
-        if (ui.getCurrentNode() == null) {
-            ui.setCurrentNode(list.getTail());  // first card
-        }
+        JTextArea keyField = new JTextArea();
+        keyField.setLineWrap(true);
+        keyField.setWrapStyleWord(true);
+        JScrollPane keyScroll = new JScrollPane(keyField);
+        keyScroll.setBounds(50, 110, 300, 80);
+        dialog.add(keyScroll);
 
-        ui.updateCardDisplay();
+        JLabel descLabel = new JLabel("Description");
+        descLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        descLabel.setBounds(50, 200, 150, 30);
+        dialog.add(descLabel);
+
+        JTextArea descField = new JTextArea();
+        descField.setLineWrap(true);
+        descField.setWrapStyleWord(true);
+        JScrollPane descScroll = new JScrollPane(descField);
+        descScroll.setBounds(50, 230, 300, 120);
+        dialog.add(descScroll);
+
+        JButton addButton = new JButton("Add");
+        addButton.setBounds(150, 370, 100, 40);
+        addButton.setBackground(Color.DARK_GRAY);
+        addButton.setForeground(Color.WHITE);
+        addButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        dialog.add(addButton);
+
+        addButton.addActionListener(e -> {
+            String key = keyField.getText().trim();
+            String desc = descField.getText().trim();
+
+            if (key.isEmpty() || desc.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Both fields must be filled in.");
+                return;
+            }
+
+            list.add(new Flashcard(key, desc));
+            if (ui.getCurrentNode() == null) {
+                ui.setCurrentNode(list.getTail());
+            }
+            ui.updateCardDisplay();
+            dialog.dispose();
+        });
+
+        dialog.setVisible(true);
     }
 
     public static void deleteCard(JFrame frame, FlashcardList list, FlashcardUI ui) {
