@@ -13,6 +13,17 @@ public class FlashcardUI {
     private FlashcardNode currentNode;
 
     public void initUI() {
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Nimbus is not available. Default Look and Feel will be used.");
+        }
+
         frame = new JFrame("My Flashcards");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1080, 720);
