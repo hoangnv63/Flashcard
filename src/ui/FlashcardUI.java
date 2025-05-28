@@ -7,6 +7,9 @@ import model.FlashcardNode;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class FlashcardUI {
     private JFrame frame;
@@ -41,10 +44,7 @@ public class FlashcardUI {
         setupCardDisplay();
         setupNavigation();
 
-        // Sample flashcards
-        flashcardLinkedList.add(new Flashcard("Java", "A high-level programming language."));
-        flashcardLinkedList.add(new Flashcard("Swing", "Java GUI toolkit."));
-        flashcardLinkedList.add(new Flashcard("Polymorphism", "Ability to take many forms."));
+        loadFlashcardsFromFile("src/cards/flashcards.txt");
 
         currentNode = flashcardLinkedList.getHead();
         updateCardDisplay();
@@ -91,7 +91,6 @@ public class FlashcardUI {
                 case "Edit card":
                     button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardLinkedList, this));
                     break;
-
             }
         }
     }
@@ -182,5 +181,20 @@ public class FlashcardUI {
 
     public void setCurrentNode(FlashcardNode node) {
         currentNode = node;
+    }
+
+    public void loadFlashcardsFromFile(String filename) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\\|", 2);
+                if (parts.length == 2) {
+                    flashcardLinkedList.add(new Flashcard(parts[0].trim(), parts[1].trim()));
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame, "Error loading flashcards: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
