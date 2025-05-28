@@ -113,8 +113,21 @@ public class FlashcardUI {
     }
 
     private void setupNavigation() {
-        prevButton = new JButton("←");
-        prevButton.setBounds(400, 580, 100, 40);
+        ImageIcon nextIcon = new ImageIcon("src/assets/nextbtn.png");
+        ImageIcon prevIcon = new ImageIcon("src/assets/prevbtn.png");
+
+        Image nextImage = nextIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        nextIcon = new ImageIcon(nextImage);
+
+        Image prevImage = prevIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        prevIcon = new ImageIcon(prevImage);
+
+        prevButton = new JButton(prevIcon);
+        prevButton.setBounds(500, 570, 50, 50);
+        prevButton.setBorderPainted(false);
+        prevButton.setContentAreaFilled(false);
+        prevButton.setFocusPainted(false);
+        prevButton.setOpaque(false);
         prevButton.addActionListener(e -> {
             FlashcardNode prevNode = flashcardLinkedList.getPrev(currentNode);
             if (prevNode != null) {
@@ -125,8 +138,12 @@ public class FlashcardUI {
         });
         frame.add(prevButton);
 
-        nextButton = new JButton("→");
-        nextButton.setBounds(700, 580, 100, 40);
+        nextButton = new JButton(nextIcon);
+        nextButton.setBounds(750, 570, 50, 50);
+        nextButton.setBorderPainted(false);
+        nextButton.setContentAreaFilled(false);
+        nextButton.setFocusPainted(false);
+        nextButton.setOpaque(false);
         nextButton.addActionListener(e -> {
             FlashcardNode nextNode = flashcardLinkedList.getNext(currentNode);
             if (nextNode != null) {
@@ -138,7 +155,7 @@ public class FlashcardUI {
         frame.add(nextButton);
 
         indexLabel = new JLabel("", JLabel.CENTER);
-        indexLabel.setBounds(480, 580, 200, 40);
+        indexLabel.setBounds(550, 570, 200, 50);
         indexLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
         frame.add(indexLabel);
     }
