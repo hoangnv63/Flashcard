@@ -79,4 +79,60 @@ public class FlashcardLinkedList {
         }
         size--;
     }
+
+    public void mergeSortByKey() {
+        head = mergeSortByKey(head);
+        LinkedNode current = head;
+        tail = null;
+        while (current != null) {
+            tail = current;
+            current = current.next;
+        }
+    }
+
+    private LinkedNode mergeSortByKey(LinkedNode node) {
+        if (node == null || node.next == null) {
+            return node;
+        }
+
+        LinkedNode middle = getMiddle(node);
+        LinkedNode nextOfMiddle = middle.next;
+        middle.next = null;
+        if (nextOfMiddle != null) nextOfMiddle.prev = null;
+
+        LinkedNode left = mergeSortByKey(node);
+        LinkedNode right = mergeSortByKey(nextOfMiddle);
+
+        return sortedMergeByKey(left, right);
+    }
+
+    private LinkedNode getMiddle(LinkedNode node) {
+        if (node == null) return node;
+        LinkedNode slow = node, fast = node;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    private LinkedNode sortedMergeByKey(LinkedNode a, LinkedNode b) {
+        if (a == null) return b;
+        if (b == null) return a;
+
+        LinkedNode result;
+
+        if (a.data.getKey().compareTo(b.data.getKey()) <= 0) {
+            result = a;
+            result.next = sortedMergeByKey(a.next, b);
+            if (result.next != null) result.next.prev = result;
+            result.prev = null;
+        } else {
+            result = b;
+            result.next = sortedMergeByKey(a, b.next);
+            if (result.next != null) result.next.prev = result;
+            result.prev = null;
+        }
+        return result;
+    }
 }

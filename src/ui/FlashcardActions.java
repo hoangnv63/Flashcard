@@ -133,4 +133,24 @@ public class FlashcardActions {
 
         dialog.setVisible(true);
     }
+
+    public static void sortCards(JFrame frame, FlashcardLinkedList list, FlashcardUI ui) {
+        String[] options = {"Sort by Key", "Sort by Description"};
+        int choice = JOptionPane.showOptionDialog(frame,
+                "Choose sorting method:",
+                "Sort Flashcards",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+
+        if (choice == 0) {
+            list.mergeSortByKey();
+            JOptionPane.showMessageDialog(frame, "Flashcards sorted by Key.");
+        } else if (choice == 1) {
+            JOptionPane.showMessageDialog(frame, "Flashcards sorted by Description.");
+        }
+
+        ui.setCurrentNode(list.getHead());
+        ui.updateCardDisplay();
+    }
 }
