@@ -1,18 +1,18 @@
 package data_structure;
 
 import model.Flashcard;
-import model.FlashcardNode;
+import model.LinkedNode;
 
 public class FlashcardLinkedList {
-    private FlashcardNode head;
-    private FlashcardNode tail;
+    private LinkedNode head;
+    private LinkedNode tail;
     private int size = 0;
 
-    public FlashcardNode getHead() {
+    public LinkedNode getHead() {
         return head;
     }
 
-    public FlashcardNode getTail() {
+    public LinkedNode getTail() {
         return tail;
     }
 
@@ -20,19 +20,19 @@ public class FlashcardLinkedList {
         return size;
     }
 
-    public FlashcardNode getPrev(FlashcardNode current) {
+    public LinkedNode getPrev(LinkedNode current) {
         if (current == null) return null;
         return current.prev;
     }
 
-    public FlashcardNode getNext(FlashcardNode current) {
+    public LinkedNode getNext(LinkedNode current) {
         if (current == null) return null;
         return current.next;
     }
 
-    public int indexOf(FlashcardNode node) {
+    public int indexOf(LinkedNode node) {
         int index = 0;
-        FlashcardNode current = head;
+        LinkedNode current = head;
         while (current != null) {
             if (current == node) return index;
             current = current.next;
@@ -41,8 +41,17 @@ public class FlashcardLinkedList {
         return -1;
     }
 
+    public LinkedNode findByKey(String key) {
+        LinkedNode node = getHead();
+        while (node != null) {
+            if (node.data.getKey().equalsIgnoreCase(key)) return node;
+            node = node.next;
+        }
+        return null;
+    }
+
     public void add(Flashcard flashcard) {
-        FlashcardNode node = new FlashcardNode(flashcard);
+        LinkedNode node = new LinkedNode(flashcard);
         if (head == null) {
             head = tail = node;
         } else {
@@ -53,7 +62,7 @@ public class FlashcardLinkedList {
         size++;
     }
 
-    public void delete(FlashcardNode node) {
+    public void delete(LinkedNode node) {
         if (node == null) return;
 
         if (node == head && node == tail) {

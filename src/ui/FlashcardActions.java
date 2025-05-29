@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import model.Flashcard;
-import model.FlashcardNode;
+import model.LinkedNode;
 import data_structure.FlashcardLinkedList;
 
 public class FlashcardActions {
@@ -77,7 +77,7 @@ public class FlashcardActions {
     }
 
     public static void deleteCard(JFrame frame, FlashcardLinkedList list, FlashcardUI ui) {
-        FlashcardNode current = ui.getCurrentNode();
+        LinkedNode current = ui.getCurrentNode();
         if (current == null) {
             JOptionPane.showMessageDialog(frame, "No card to delete.", "Delete Error", JOptionPane.WARNING_MESSAGE);
             return;
@@ -89,7 +89,7 @@ public class FlashcardActions {
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            FlashcardNode nextNode = current.next != null ? current.next : current.prev;
+            LinkedNode nextNode = current.next != null ? current.next : current.prev;
             list.delete(current);
             ui.setCurrentNode(nextNode);
             ui.updateCardDisplay();
@@ -97,7 +97,7 @@ public class FlashcardActions {
     }
 
     public static void editCard(JFrame parentFrame, FlashcardLinkedList list, FlashcardUI ui) {
-        FlashcardNode current = ui.getCurrentNode();
+        LinkedNode current = ui.getCurrentNode();
         if (current == null) {
             JOptionPane.showMessageDialog(parentFrame, "No card to edit.", "Edit Error", JOptionPane.WARNING_MESSAGE);
             return;

@@ -1,8 +1,9 @@
 package ui;
 
 import data_structure.FlashcardLinkedList;
+import data_structure.FlashcardTrie;
 import model.Flashcard;
-import model.FlashcardNode;
+import model.LinkedNode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,7 @@ import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 public class FlashcardUI {
     private JFrame frame;
@@ -19,26 +21,12 @@ public class FlashcardUI {
     private boolean showingKey = true;
 
     private final FlashcardLinkedList flashcardLinkedList = new FlashcardLinkedList();
-    private FlashcardNode currentNode;
+    private final FlashcardTrie flashcardTrie = new FlashcardTrie();
+    private LinkedNode currentNode;
 
     public void initUI() {
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Nimbus is not available. Default Look and Feel will be used.");
-        }
-
-        frame = new JFrame("My Flashcards");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1080, 720);
-        frame.setLayout(null);
-        frame.setLocationRelativeTo(null);
-
+        setLookAndFeel();
+        initializeFrame();
         setupHeader();
         setupSidebar();
         setupCardDisplay();
@@ -52,6 +40,27 @@ public class FlashcardUI {
         frame.setVisible(true);
     }
 
+    private void setLookAndFeel() {
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Nimbus is not available. Default Look and Feel will be used.");
+        }
+    }
+
+    private void initializeFrame() {
+        frame = new JFrame("My Flashcards");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1080, 720);
+        frame.setLayout(null);
+        frame.setLocationRelativeTo(null);
+    }
+
     private void setupHeader() {
         JLabel titleLabel = new JLabel("MY FLASHCARDS", JLabel.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 36));
@@ -62,36 +71,58 @@ public class FlashcardUI {
         searchField.setBounds(100, 80, 700, 40);
         frame.add(searchField);
 
-        JButton searchButton = new JButton("Search");
-        searchButton.setBounds(820, 80, 120, 40);
-        searchButton.setBackground(Color.BLACK);
-        searchButton.setForeground(Color.WHITE);
-        searchButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        JButton searchButton = createButton("Search", 820, 80, 120, 40);
+        searchButton.addActionListener(e -> handleSearch());
         frame.add(searchButton);
+    }
+
+    private void handleSearch() {
+        String prefix = searchField.getText().trim();
+        if (prefix.isEmpty()) {
+            showMessage("Please enter a prefix to search.");
+            return;
+        }
+
+        List<String> suggestions = flashcardTrie.suggest(prefix);
+        if (suggestions.isEmpty()) {
+            showMessage("No matching flashcards found.");
+        } else {
+            StringBuilder sb = new StringBuilder("Suggestions:\n");
+            for (String s : suggestions) sb.append("- ").append(s).append("\n");
+            showMessage(sb.toString());
+
+            LinkedNode node = flashcardLinkedList.findByKey(suggestions.get(0));
+            if (node != null) {
+                setCurrentNode(node);
+                updateCardDisplay();
+            }
+        }
     }
 
     private void setupSidebar() {
         String[] labels = {"Add card", "Delete card", "Edit card", "Arrange cards", "Quiz"};
 
         for (int i = 0; i < labels.length; i++) {
-            JButton button = new JButton(labels[i]);
-            button.setBounds(50, 150 + i * 60, 200, 50);
-            button.setBackground(Color.BLACK);
-            button.setForeground(Color.WHITE);
-            button.setFont(new Font("SansSerif", Font.BOLD, 20));
+            JButton button = createSidebarButton(labels[i], 150 + i * 60);
+            addSidebarAction(button, labels[i]);
             frame.add(button);
+        }
+    }
 
-            switch (labels[i]) {
-                case "Add card":
-                    button.addActionListener(e -> FlashcardActions.addCard(frame, flashcardLinkedList, this));
-                    break;
-                case "Delete card":
-                    button.addActionListener(e -> FlashcardActions.deleteCard(frame, flashcardLinkedList, this));
-                    break;
-                case "Edit card":
-                    button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardLinkedList, this));
-                    break;
-            }
+    private JButton createSidebarButton(String text, int y) {
+        JButton button = new JButton(text);
+        button.setBounds(50, y, 200, 50);
+        button.setBackground(Color.BLACK);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 20));
+        return button;
+    }
+
+    private void addSidebarAction(JButton button, String label) {
+        switch (label) {
+            case "Add card" -> button.addActionListener(e -> FlashcardActions.addCard(frame, flashcardLinkedList, this));
+            case "Delete card" -> button.addActionListener(e -> FlashcardActions.deleteCard(frame, flashcardLinkedList, this));
+            case "Edit card" -> button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardLinkedList, this));
         }
     }
 
@@ -112,51 +143,48 @@ public class FlashcardUI {
     }
 
     private void setupNavigation() {
-        ImageIcon nextIcon = new ImageIcon("src/assets/nextbtn.png");
-        ImageIcon prevIcon = new ImageIcon("src/assets/prevbtn.png");
+        prevButton = createNavButton("src/assets/prevbtn.png", 500);
+        nextButton = createNavButton("src/assets/nextbtn.png", 750);
 
-        Image nextImage = nextIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        nextIcon = new ImageIcon(nextImage);
-
-        Image prevImage = prevIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        prevIcon = new ImageIcon(prevImage);
-
-        prevButton = new JButton(prevIcon);
-        prevButton.setBounds(500, 570, 50, 50);
-        prevButton.setBorderPainted(false);
-        prevButton.setContentAreaFilled(false);
-        prevButton.setFocusPainted(false);
-        prevButton.setOpaque(false);
         prevButton.addActionListener(e -> {
-            FlashcardNode prevNode = flashcardLinkedList.getPrev(currentNode);
+            LinkedNode prevNode = flashcardLinkedList.getPrev(currentNode);
             if (prevNode != null) {
                 currentNode = prevNode;
                 showingKey = true;
                 updateCardDisplay();
             }
         });
-        frame.add(prevButton);
 
-        nextButton = new JButton(nextIcon);
-        nextButton.setBounds(750, 570, 50, 50);
-        nextButton.setBorderPainted(false);
-        nextButton.setContentAreaFilled(false);
-        nextButton.setFocusPainted(false);
-        nextButton.setOpaque(false);
         nextButton.addActionListener(e -> {
-            FlashcardNode nextNode = flashcardLinkedList.getNext(currentNode);
+            LinkedNode nextNode = flashcardLinkedList.getNext(currentNode);
             if (nextNode != null) {
                 currentNode = nextNode;
                 showingKey = true;
                 updateCardDisplay();
             }
         });
+
+        frame.add(prevButton);
         frame.add(nextButton);
 
         indexLabel = new JLabel("", JLabel.CENTER);
         indexLabel.setBounds(550, 570, 200, 50);
         indexLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
         frame.add(indexLabel);
+    }
+
+    private JButton createNavButton(String path, int x) {
+        ImageIcon icon = new ImageIcon(path);
+        Image scaledImage = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        icon = new ImageIcon(scaledImage);
+
+        JButton button = new JButton(icon);
+        button.setBounds(x, 570, 50, 50);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setOpaque(false);
+        return button;
     }
 
     public void updateCardDisplay() {
@@ -175,11 +203,11 @@ public class FlashcardUI {
         indexLabel.setText((index + 1) + "/" + flashcardLinkedList.getSize());
     }
 
-    public FlashcardNode getCurrentNode() {
+    public LinkedNode getCurrentNode() {
         return currentNode;
     }
 
-    public void setCurrentNode(FlashcardNode node) {
+    public void setCurrentNode(LinkedNode node) {
         currentNode = node;
     }
 
@@ -189,12 +217,26 @@ public class FlashcardUI {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\\|", 2);
                 if (parts.length == 2) {
-                    flashcardLinkedList.add(new Flashcard(parts[0].trim(), parts[1].trim()));
+                    Flashcard card = new Flashcard(parts[0].trim(), parts[1].trim());
+                    flashcardLinkedList.add(card);
+                    flashcardTrie.insert(card.getKey(), card.getDescription());
                 }
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame, "Error loading flashcards: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            showMessage("Error loading flashcards: " + e.getMessage());
         }
+    }
+
+    private JButton createButton(String text, int x, int y, int width, int height) {
+        JButton button = new JButton(text);
+        button.setBounds(x, y, width, height);
+        button.setBackground(Color.BLACK);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 16));
+        return button;
+    }
+
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(frame, message);
     }
 }
