@@ -2,7 +2,9 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
+import data_structure.FlashcardTrie;
 import model.Flashcard;
 import model.LinkedNode;
 import data_structure.FlashcardLinkedList;
@@ -13,7 +15,6 @@ public class FlashcardActions {
         dialog.setSize(400, 500);
         dialog.setLayout(null);
         dialog.setLocationRelativeTo(parent);
-//        dialog.getContentPane().setBackground(Color.LIGHT_GRAY);
         dialog.setResizable(false);
         return dialog;
     }
@@ -152,5 +153,27 @@ public class FlashcardActions {
 
         ui.setCurrentNode(list.getHead());
         ui.updateCardDisplay();
+    }
+
+    public static void searchCard(JFrame parentFrame, FlashcardLinkedList list, FlashcardTrie trie, FlashcardUI ui, String prefix) {
+        if (prefix.isEmpty()) {
+            JOptionPane.showMessageDialog(parentFrame, "Please enter a prefix to search.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        List<String> suggestions = trie.suggest(prefix);
+        if (suggestions.isEmpty()) {
+            JOptionPane.showMessageDialog(parentFrame, "No matching flashcards found.", "Search Result", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            StringBuilder sb = new StringBuilder("Suggestions:\n");
+            for (String s : suggestions) sb.append("- ").append(s).append("\n");
+            JOptionPane.showMessageDialog(parentFrame, sb.toString(), "Search Result", JOptionPane.INFORMATION_MESSAGE);
+
+            LinkedNode node = list.findByKey(suggestions.get(0));
+            if (node != null) {
+                ui.setCurrentNode(node);
+                ui.updateCardDisplay();
+            }
+        }
     }
 }

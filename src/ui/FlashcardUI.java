@@ -1,6 +1,7 @@
 package ui;
 
 import data_structure.FlashcardLinkedList;
+import data_structure.FlashcardTrie;
 import model.Flashcard;
 import model.LinkedNode;
 
@@ -10,6 +11,7 @@ import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 public class FlashcardUI {
     private JFrame frame;
@@ -19,6 +21,7 @@ public class FlashcardUI {
     private boolean showingKey = true;
 
     private final FlashcardLinkedList flashcardLinkedList = new FlashcardLinkedList();
+    private final FlashcardTrie flashcardTrie = new FlashcardTrie();
     private LinkedNode currentNode;
 
     public void initUI() {
@@ -67,6 +70,11 @@ public class FlashcardUI {
         searchButton.setBackground(Color.BLACK);
         searchButton.setForeground(Color.WHITE);
         searchButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        searchButton.addActionListener(e -> {
+            String prefix = searchField.getText().trim();
+            FlashcardActions.searchCard(frame, flashcardLinkedList, flashcardTrie, this, prefix);
+        });
+        frame.add(searchButton);
         frame.add(searchButton);
     }
 
@@ -192,12 +200,20 @@ public class FlashcardUI {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\\|", 2);
                 if (parts.length == 2) {
-                    flashcardLinkedList.add(new Flashcard(parts[0].trim(), parts[1].trim()));
+                    String key = parts[0].trim();
+                    String description = parts[1].trim();
+                    Flashcard card = new Flashcard(key, description);
+                    flashcardLinkedList.add(card);
+                    flashcardTrie.insert(key, description);
                 }
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Error loading flashcards: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(frame, message);
     }
 }
