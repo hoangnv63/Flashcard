@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-import data_structure.Trie;
+import data_structure.FlashcardTrie;
 import model.Flashcard;
 import model.LinkedNode;
 import data_structure.FlashcardLinkedList;
@@ -155,13 +155,13 @@ public class FlashcardActions {
         ui.updateCardDisplay();
     }
 
-    public static void searchCard(JFrame parentFrame, FlashcardLinkedList list, Trie trie, FlashcardUI ui, String prefix) {
+    public static void searchCard(JFrame parentFrame, FlashcardLinkedList list, FlashcardTrie flashcardTrie, FlashcardUI ui, String prefix) {
         if (prefix.isEmpty()) {
             JOptionPane.showMessageDialog(parentFrame, "Please enter a prefix to search.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        List<String> suggestions = trie.suggest(prefix);
+        List<String> suggestions = flashcardTrie.suggest(prefix);
         if (suggestions.isEmpty()) {
             JOptionPane.showMessageDialog(parentFrame, "No matching flashcards found.", "Search Result", JOptionPane.INFORMATION_MESSAGE);
         } else if (suggestions.size() == 1) {

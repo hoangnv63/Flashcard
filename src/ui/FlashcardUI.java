@@ -1,7 +1,7 @@
 package ui;
 
 import data_structure.FlashcardLinkedList;
-import data_structure.Trie;
+import data_structure.FlashcardTrie;
 import model.Flashcard;
 import model.LinkedNode;
 
@@ -21,7 +21,7 @@ public class FlashcardUI {
     private boolean showingKey = true;
     
     private final FlashcardLinkedList flashcardLinkedList = new FlashcardLinkedList();
-    private final Trie trie = new Trie();
+    private final FlashcardTrie flashcardTrie = new FlashcardTrie();
     private LinkedNode currentNode;
 
     public JFrame getFrame() {
@@ -76,7 +76,7 @@ public class FlashcardUI {
         searchButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         searchButton.addActionListener(e -> {
             String prefix = searchField.getText().trim();
-            FlashcardActions.searchCard(frame, flashcardLinkedList, trie, this, prefix);
+            FlashcardActions.searchCard(frame, flashcardLinkedList, flashcardTrie, this, prefix);
         });
         frame.add(searchButton);
         frame.add(searchButton);
@@ -219,7 +219,7 @@ public class FlashcardUI {
                     String description = parts[1].trim();
                     Flashcard card = new Flashcard(key, description);
                     flashcardLinkedList.add(card);
-                    trie.insert(key, description);
+                    flashcardTrie.insert(key, description);
                 }
             }
         } catch (IOException e) {

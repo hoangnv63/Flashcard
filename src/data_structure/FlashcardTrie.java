@@ -4,7 +4,7 @@ import java.util.*;
 import model.TrieNode;
 import model.Flashcard;
 
-public class Trie {
+public class FlashcardTrie {
     private final TrieNode root = new TrieNode();
 
     public void insert(String key, String description) {
