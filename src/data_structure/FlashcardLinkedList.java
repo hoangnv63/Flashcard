@@ -3,6 +3,9 @@ package data_structure;
 import model.Flashcard;
 import model.LinkedNode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FlashcardLinkedList {
     private LinkedNode head;
     private LinkedNode tail;
@@ -60,6 +63,16 @@ public class FlashcardLinkedList {
             tail = node;
         }
         size++;
+    }
+
+    public List<Flashcard> toList() {
+        List<Flashcard> result = new ArrayList<>();
+        LinkedNode node = getHead();
+        while (node != null) {
+            result.add(node.data);
+            node = node.next;
+        }
+        return result;
     }
 
     public void delete(LinkedNode node) {

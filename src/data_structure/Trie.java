@@ -4,7 +4,7 @@ import java.util.*;
 import model.TrieNode;
 import model.Flashcard;
 
-public class FlashcardTrie {
+public class Trie {
     private final TrieNode root = new TrieNode();
 
     public void insert(String key, String description) {
@@ -43,12 +43,4 @@ public class FlashcardTrie {
         }
     }
 
-    public Flashcard search(String key) {
-        TrieNode node = root;
-        for (char ch : key.toCharArray()) {
-            node = node.children.get(ch);
-            if (node == null) return null;
-        }
-        return node.isEndOfWord ? node.flashcard : null;
-    }
 }

@@ -1,7 +1,7 @@
 package ui;
 
 import data_structure.FlashcardLinkedList;
-import data_structure.FlashcardTrie;
+import data_structure.Trie;
 import model.Flashcard;
 import model.LinkedNode;
 
@@ -19,10 +19,14 @@ public class FlashcardUI {
     private JTextField searchField;
     private JButton prevButton, nextButton;
     private boolean showingKey = true;
-
+    
     private final FlashcardLinkedList flashcardLinkedList = new FlashcardLinkedList();
-    private final FlashcardTrie flashcardTrie = new FlashcardTrie();
+    private final Trie trie = new Trie();
     private LinkedNode currentNode;
+
+    public JFrame getFrame() {
+        return frame;
+    }
 
     public void initUI() {
         try {
@@ -72,7 +76,7 @@ public class FlashcardUI {
         searchButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         searchButton.addActionListener(e -> {
             String prefix = searchField.getText().trim();
-            FlashcardActions.searchCard(frame, flashcardLinkedList, flashcardTrie, this, prefix);
+            FlashcardActions.searchCard(frame, flashcardLinkedList, trie, this, prefix);
         });
         frame.add(searchButton);
         frame.add(searchButton);
@@ -101,6 +105,17 @@ public class FlashcardUI {
                     break;
                 case "Sort cards":
                     button.addActionListener(e -> FlashcardActions.sortCards(frame, flashcardLinkedList, this));
+                    break;
+                case "Quiz":
+                    button.addActionListener(e -> {
+                        List<Flashcard> cards = flashcardLinkedList.toList();
+                        if (cards.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "No flashcards available for quiz.");
+                        } else {
+                            QuizDialog quizDialog = new QuizDialog(frame, cards);
+                            quizDialog.setVisible(true);
+                        }
+                    });
                     break;
             }
         }
@@ -204,7 +219,7 @@ public class FlashcardUI {
                     String description = parts[1].trim();
                     Flashcard card = new Flashcard(key, description);
                     flashcardLinkedList.add(card);
-                    flashcardTrie.insert(key, description);
+                    trie.insert(key, description);
                 }
             }
         } catch (IOException e) {
