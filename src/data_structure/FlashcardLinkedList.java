@@ -140,7 +140,6 @@ public class FlashcardLinkedList {
     }
 
 
-
     public List<Flashcard> toList() {
         List<Flashcard> result = new ArrayList<>();
         LinkedNode node = getHead();

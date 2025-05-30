@@ -12,9 +12,9 @@ public class QuizDialog extends JDialog {
     private int currentIndex = 0;
     private int score = 0;
 
-    private final JLabel questionLabel;
+    private final JTextArea questionArea;
     private final JTextField answerField;
-    private final JLabel feedbackLabel;
+    private final JTextArea feedbackArea;
     private final JButton checkButton;
     private final JButton nextButton;
     private final JLabel progressLabel;
@@ -24,14 +24,23 @@ public class QuizDialog extends JDialog {
         setSize(500, 320);
         setLocationRelativeTo(parent);
         setLayout(null);
+        getContentPane().setBackground(Color.WHITE);
+
 
         Collections.shuffle(allCards);
         questions = new ArrayList<>(allCards.subList(0, Math.min(3, allCards.size())));
 
-        questionLabel = new JLabel("", JLabel.CENTER);
-        questionLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        questionLabel.setBounds(40, 30, 400, 40);
-        add(questionLabel);
+        questionArea = new JTextArea();
+        questionArea.setFont(new Font("SansSerif", Font.BOLD, 17));
+        questionArea.setBounds(40, 20, 400, 48);
+        questionArea.setWrapStyleWord(true);
+        questionArea.setLineWrap(true);
+        questionArea.setOpaque(false);
+        questionArea.setEditable(false);
+        questionArea.setFocusable(false);
+        questionArea.setBorder(null);
+        questionArea.setHighlighter(null);
+        add(questionArea);
 
         answerField = new JTextField();
         answerField.setBounds(40, 80, 400, 35);
@@ -46,10 +55,18 @@ public class QuizDialog extends JDialog {
         nextButton.setEnabled(false);
         add(nextButton);
 
-        feedbackLabel = new JLabel("", JLabel.CENTER);
-        feedbackLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        feedbackLabel.setBounds(40, 180, 400, 30);
-        add(feedbackLabel);
+        feedbackArea = new JTextArea();
+        feedbackArea.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        feedbackArea.setBounds(40, 170, 400, 38); // tăng chiều cao nếu muốn wrap nhiều dòng
+        feedbackArea.setWrapStyleWord(true);
+        feedbackArea.setLineWrap(true);
+        feedbackArea.setOpaque(false);
+        feedbackArea.setEditable(false);
+        feedbackArea.setFocusable(false);
+        feedbackArea.setBorder(null);
+        feedbackArea.setHighlighter(null);
+        feedbackArea.setForeground(Color.BLACK);
+        add(feedbackArea);
 
         progressLabel = new JLabel("", JLabel.CENTER);
         progressLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -64,19 +81,20 @@ public class QuizDialog extends JDialog {
 
     private void loadQuestion() {
         if (currentIndex >= questions.size()) {
-            questionLabel.setText("Quiz Finished!");
+            questionArea.setText("Quiz Finished!");
             answerField.setVisible(false);
             checkButton.setVisible(false);
             nextButton.setVisible(false);
-            feedbackLabel.setText("Your score: " + score + "/" + questions.size());
+            feedbackArea.setText("Your score: " + score + "/" + questions.size());
             progressLabel.setText("");
             return;
         }
         Flashcard card = questions.get(currentIndex);
-        questionLabel.setText("What is the meaning of: " + card.getKey() + "?");
+        questionArea.setText("What is the key of: " + card.getDescription() + "?");
         answerField.setText("");
         answerField.setEditable(true);
-        feedbackLabel.setText("");
+        feedbackArea.setText("");
+        feedbackArea.setForeground(Color.BLACK);
         checkButton.setEnabled(true);
         nextButton.setEnabled(false);
         progressLabel.setText("Question " + (currentIndex + 1) + " of " + questions.size());
@@ -85,14 +103,16 @@ public class QuizDialog extends JDialog {
     private void checkAnswer() {
         Flashcard card = questions.get(currentIndex);
         String userAnswer = answerField.getText().trim().toLowerCase();
-        String correctAnswer = card.getDescription().trim().toLowerCase();
+        String correctAnswer = card.getKey().trim().toLowerCase();
 
         if (userAnswer.equals(correctAnswer)) {
-            feedbackLabel.setText("✅ Correct!");
-            score++;
+            feedbackArea.setText("✅ Correct!");
+            feedbackArea.setForeground(new Color(0, 130, 0));
         } else {
-            feedbackLabel.setText("<html>❌ Incorrect!<br/>Answer: " + card.getDescription() + "</html>");
+            feedbackArea.setText("❌ Incorrect!\nAnswer: " + card.getKey());
+            feedbackArea.setForeground(Color.RED);
         }
+
         answerField.setEditable(false);
         checkButton.setEnabled(false);
         nextButton.setEnabled(true);
