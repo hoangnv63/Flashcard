@@ -62,8 +62,6 @@ public class QuizDialog extends JDialog {
         loadQuestion();
     }
 
-    //m béo vãi
-
     private void loadQuestion() {
         if (currentIndex >= questions.size()) {
             questionLabel.setText("Quiz Finished!");

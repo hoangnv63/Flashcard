@@ -65,16 +65,6 @@ public class FlashcardLinkedList {
         size++;
     }
 
-    public List<Flashcard> toList() {
-        List<Flashcard> result = new ArrayList<>();
-        LinkedNode node = getHead();
-        while (node != null) {
-            result.add(node.data);
-            node = node.next;
-        }
-        return result;
-    }
-
     public void delete(LinkedNode node) {
         if (node == null) return;
 
@@ -145,6 +135,18 @@ public class FlashcardLinkedList {
             result.next = sortedMergeByKey(a, b.next);
             if (result.next != null) result.next.prev = result;
             result.prev = null;
+        }
+        return result;
+    }
+
+
+
+    public List<Flashcard> toList() {
+        List<Flashcard> result = new ArrayList<>();
+        LinkedNode node = getHead();
+        while (node != null) {
+            result.add(node.data);
+            node = node.next;
         }
         return result;
     }
