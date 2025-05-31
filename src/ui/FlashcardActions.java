@@ -202,9 +202,11 @@ public class FlashcardActions {
 
         ui.setCurrentNode(list.getHead());
         ui.updateCardDisplay();
+
+        JOptionPane.showMessageDialog(frame, "Cards shuffled!");
     }
 
-    public static void sortCards(JFrame parentFrame, FlashcardLinkedList list, FlashcardUI ui, String criteria, String order) {
+    public static void sortCards(JFrame frame, FlashcardLinkedList list, FlashcardUI ui, String criteria, String order) {
         boolean ascending = order.equals("Ascending");
 
         switch (criteria) {
@@ -218,7 +220,7 @@ public class FlashcardActions {
                 list.sortByUploadNumber(ascending);
                 break;
             default:
-                JOptionPane.showMessageDialog(parentFrame, "Invalid sort criteria selected.");
+                JOptionPane.showMessageDialog(frame, "Invalid sort criteria selected.");
                 return;
         }
 

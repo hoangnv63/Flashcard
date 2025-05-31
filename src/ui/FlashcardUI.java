@@ -117,13 +117,13 @@ public class FlashcardUI {
         applySortButton.addActionListener(e -> {
             String criteria = (String) sortCriteriaBox.getSelectedItem();
             String order = (String) sortOrderBox.getSelectedItem();
-            applySort(criteria, order);
+            FlashcardActions.sortCards(frame, flashcardLinkedList, this, criteria, order);
         });
         frame.add(applySortButton);
     }
 
     private void setupSidebar() {
-        String[] labels = {"Add card", "Delete card", "Edit card", "Quiz", "Shuffle cards"};
+        String[] labels = {"Add card", "Delete card", "Edit card", "Shuffle cards", "Quiz"};
 
         for (int i = 0; i < labels.length; i++) {
             JButton button = new JButton(labels[i]);
@@ -144,6 +144,9 @@ public class FlashcardUI {
                 case "Edit card":
                     button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardLinkedList, this));
                     break;
+                case "Shuffle cards":
+                    button.addActionListener(e -> FlashcardActions.shuffleCards(frame, flashcardLinkedList, this));
+                    break;
                 case "Quiz":
                     button.addActionListener(e -> {
                         List<Flashcard> cards = flashcardLinkedList.toList();
@@ -155,35 +158,8 @@ public class FlashcardUI {
                         }
                     });
                     break;
-                case "Shuffle cards":
-                    button.addActionListener(e -> {
-                        shuffleCards(frame, flashcardLinkedList, this);
-                        JOptionPane.showMessageDialog(frame, "Cards shuffled!");
-                    });
-                    break;
             }
         }
-    }
-
-    private void applySort(String criteria, String order) {
-        boolean ascending = order.equals("Ascending");
-        switch (criteria) {
-            case "Key":
-                flashcardLinkedList.sortByKey(ascending);
-                break;
-            case "Description":
-                flashcardLinkedList.sortByDescription(ascending);
-                break;
-            case "Upload Number":
-                flashcardLinkedList.sortByUploadNumber(ascending);
-                break;
-            default:
-                JOptionPane.showMessageDialog(frame, "Invalid sort criteria selected.");
-                return;
-        }
-        currentNode = flashcardLinkedList.getHead();
-        showingKey = true;
-        updateCardDisplay();
     }
 
     private void setupCardDisplay() {
