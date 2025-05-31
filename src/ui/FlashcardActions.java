@@ -135,50 +135,57 @@ public class FlashcardActions {
         dialog.setVisible(true);
     }
 
-    public static void searchCard(JFrame parentFrame, FlashcardLinkedList list, FlashcardTrie flashcardTrie, FlashcardUI ui, String prefix) {
+    public static void searchCard(JFrame parentFrame, FlashcardLinkedList list, FlashcardTrie trie, FlashcardUI ui, String prefix) {
         if (prefix.isEmpty()) {
             JOptionPane.showMessageDialog(parentFrame, "Please enter a prefix to search.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        List<String> suggestions = flashcardTrie.suggest(prefix);
+        List<String> suggestions = trie.suggest(prefix);
+
         if (suggestions.isEmpty()) {
             JOptionPane.showMessageDialog(parentFrame, "No matching flashcards found.", "Search Result", JOptionPane.INFORMATION_MESSAGE);
-        } else if (suggestions.size() == 1) {
-                String firstResult = suggestions.get(0);
-                String key = firstResult.split(":", 2)[0].trim();
-                LinkedNode node = list.findByKey(key);
-                if (node != null) {
-                    ui.setCurrentNode(node);
-                    ui.updateCardDisplay();
-                }
-            } else {
-                JList<String> listne = new JList<>(suggestions.stream().map(s -> s.split(":", 2)[0].trim()).toArray(String[]::new));
-                listne.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-                listne.setVisibleRowCount(Math.min(20, suggestions.size()));
-
-                JScrollPane scrollPane = new JScrollPane(listne);
-                scrollPane.setPreferredSize(new Dimension(350, 150));
-
-                int result = JOptionPane.showConfirmDialog(
-                        ui.getFrame(),
-                        scrollPane,
-                        "Select a flashcard to view",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE
-                );
-
-                if (result == JOptionPane.OK_OPTION && listne.getSelectedValue() != null) {
-                    String selected = listne.getSelectedValue();
-                    String key = selected.split(":", 2)[0].trim();
-                    LinkedNode node = list.findByKey(key);
-                    if (node != null) {
-                        ui.setCurrentNode(node);
-                        ui.updateCardDisplay();
-                    }
-                }
-            }
+            return;
         }
+
+        if (suggestions.size() == 1) {
+            navigateToCard(suggestions.get(0), list, ui);
+            return;
+        }
+
+        String[] keys = suggestions.stream()
+                .map(s -> s.split(":", 2)[0].trim())
+                .toArray(String[]::new);
+
+        JList<String> resultList = new JList<>(keys);
+        resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        resultList.setVisibleRowCount(Math.min(20, keys.length));
+
+        JScrollPane scrollPane = new JScrollPane(resultList);
+        scrollPane.setPreferredSize(new Dimension(350, 150));
+
+        int selection = JOptionPane.showConfirmDialog(
+                ui.getFrame(),
+                scrollPane,
+                "Select a flashcard to view",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (selection == JOptionPane.OK_OPTION && resultList.getSelectedValue() != null) {
+            navigateToCard(resultList.getSelectedValue(), list, ui);
+        }
+    }
+
+    private static void navigateToCard(String keyText, FlashcardLinkedList list, FlashcardUI ui) {
+        String key = keyText.split(":", 2)[0].trim();
+        LinkedNode node = list.findByKey(key);
+        if (node != null) {
+            ui.setCurrentNode(node);
+            ui.updateCardDisplay();
+        }
+    }
+
 
     public static void sortCards(JFrame parentFrame, FlashcardLinkedList list, FlashcardUI ui, String criteria, String order) {
         boolean ascending = order.equals("Ascending");
