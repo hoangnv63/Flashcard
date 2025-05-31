@@ -83,6 +83,12 @@ public class FlashcardLinkedList {
         size--;
     }
 
+    public void clear() {
+        head = null;
+        tail = null;
+        size = 0;
+    }
+
     public void mergeSortByKey() {
         head = mergeSortByKey(head);
         LinkedNode current = head;

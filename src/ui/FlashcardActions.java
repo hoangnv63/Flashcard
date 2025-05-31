@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+import data_structure.FlashcardArrayList;
 import data_structure.FlashcardTrie;
 import model.Flashcard;
 import model.LinkedNode;
@@ -186,6 +187,22 @@ public class FlashcardActions {
         }
     }
 
+    public static void shuffleCards(JFrame frame, FlashcardLinkedList list, FlashcardUI ui) {
+        FlashcardArrayList tempList = new FlashcardArrayList();
+        for (Flashcard card : list.toList()) {
+            tempList.add(card);
+        }
+
+        tempList.shuffle();
+
+        list.clear();
+        for (Flashcard card : tempList.getAll()) {
+            list.add(card);
+        }
+
+        ui.setCurrentNode(list.getHead());
+        ui.updateCardDisplay();
+    }
 
     public static void sortCards(JFrame parentFrame, FlashcardLinkedList list, FlashcardUI ui, String criteria, String order) {
         boolean ascending = order.equals("Ascending");
