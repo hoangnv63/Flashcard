@@ -139,7 +139,6 @@ public class FlashcardLinkedList {
         return result;
     }
 
-
     public List<Flashcard> toList() {
         List<Flashcard> result = new ArrayList<>();
         LinkedNode node = getHead();
@@ -148,5 +147,81 @@ public class FlashcardLinkedList {
             node = node.next;
         }
         return result;
+    }
+
+    public void sortByKey(boolean ascending) {
+        head = mergeSort(head, ascending, "key");
+        fixTailAndPrevLinks();
+    }
+
+    public void sortByDescription(boolean ascending) {
+        head = mergeSort(head, ascending, "description");
+        fixTailAndPrevLinks();
+    }
+
+    public void sortByUploadNumber(boolean ascending) {
+        head = mergeSort(head, ascending, "uploadNumber");
+        fixTailAndPrevLinks();
+    }
+
+    private LinkedNode mergeSort(LinkedNode node, boolean ascending, String criteria) {
+        if (node == null || node.next == null) {
+            return node;
+        }
+
+        LinkedNode middle = getMiddle(node);
+        LinkedNode nextOfMiddle = middle.next;
+        middle.next = null;
+        if (nextOfMiddle != null) nextOfMiddle.prev = null;
+
+        LinkedNode left = mergeSort(node, ascending, criteria);
+        LinkedNode right = mergeSort(nextOfMiddle, ascending, criteria);
+
+        return sortedMerge(left, right, ascending, criteria);
+    }
+
+    private LinkedNode sortedMerge(LinkedNode a, LinkedNode b, boolean ascending, String criteria) {
+        if (a == null) return b;
+        if (b == null) return a;
+
+        int cmp = compareByCriteria(a.data, b.data, criteria);
+        if (!ascending) cmp = -cmp;
+
+        LinkedNode result;
+        if (cmp <= 0) {
+            result = a;
+            result.next = sortedMerge(a.next, b, ascending, criteria);
+            if (result.next != null) result.next.prev = result;
+            result.prev = null;
+        } else {
+            result = b;
+            result.next = sortedMerge(a, b.next, ascending, criteria);
+            if (result.next != null) result.next.prev = result;
+            result.prev = null;
+        }
+        return result;
+    }
+
+    private int compareByCriteria(Flashcard a, Flashcard b, String criteria) {
+        return switch (criteria) {
+            case "key" -> a.getKey().compareToIgnoreCase(b.getKey());
+            case "description" -> a.getDescription().compareToIgnoreCase(b.getDescription());
+            case "uploadNumber" -> Integer.compare(a.getUploadNumber(), b.getUploadNumber());
+            default -> 0;
+        };
+    }
+
+    private void fixTailAndPrevLinks() {
+        if (head == null) {
+            tail = null;
+            return;
+        }
+        LinkedNode current = head;
+        current.prev = null;
+        while (current.next != null) {
+            current.next.prev = current;
+            current = current.next;
+        }
+        tail = current;
     }
 }

@@ -19,7 +19,10 @@ public class FlashcardUI {
     private JTextField searchField;
     private JButton prevButton, nextButton;
     private boolean showingKey = true;
-    
+
+    private JComboBox<String> sortCriteriaBox;
+    private JComboBox<String> sortOrderBox;
+
     private final FlashcardLinkedList flashcardLinkedList = new FlashcardLinkedList();
     private final FlashcardTrie flashcardTrie = new FlashcardTrie();
     private LinkedNode currentNode;
@@ -62,35 +65,73 @@ public class FlashcardUI {
     private void setupHeader() {
         JLabel titleLabel = new JLabel("MY FLASHCARDS", JLabel.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 36));
-        titleLabel.setBounds(340, 20, 400, 40);
+        titleLabel.setBounds(340, 20, 400, 50);
         frame.add(titleLabel);
 
         searchField = new JTextField();
-        searchField.setBounds(100, 80, 700, 40);
+        searchField.setBounds(250, 90, 500, 35);
+        searchField.setFont(new Font("SansSerif", Font.PLAIN, 16));
         frame.add(searchField);
 
         JButton searchButton = new JButton("Search");
-        searchButton.setBounds(820, 80, 120, 40);
+        searchButton.setBounds(760, 90, 100, 35);
         searchButton.setBackground(Color.BLACK);
         searchButton.setForeground(Color.WHITE);
         searchButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        searchButton.setFocusPainted(false);
         searchButton.addActionListener(e -> {
             String prefix = searchField.getText().trim();
             FlashcardActions.searchCard(frame, flashcardLinkedList, flashcardTrie, this, prefix);
         });
         frame.add(searchButton);
-        frame.add(searchButton);
+
+        setupSortingControls();
+    }
+
+    private void setupSortingControls() {
+        int y = 150;
+        JLabel sortLabel = new JLabel("Sort Cards By:");
+        sortLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        sortLabel.setBounds(250, y, 120, 25);
+        frame.add(sortLabel);
+
+        String[] criteriaOptions = {"Key", "Description", "Upload Number"};
+        String[] orderOptions = {"Ascending", "Descending"};
+
+        sortCriteriaBox = new JComboBox<>(criteriaOptions);
+        sortCriteriaBox.setBounds(360, y, 150, 25);
+        frame.add(sortCriteriaBox);
+
+        sortOrderBox = new JComboBox<>(orderOptions);
+        sortOrderBox.setBounds(520, y, 150, 25);
+        frame.add(sortOrderBox);
+
+        JButton applySortButton = new JButton("Sort");
+        applySortButton.setBounds(680, y, 70, 25);
+        applySortButton.setBackground(Color.BLACK);
+        applySortButton.setForeground(Color.WHITE);
+        applySortButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        applySortButton.addActionListener(e -> {
+            String criteria = (String) sortCriteriaBox.getSelectedItem();
+            String order = (String) sortOrderBox.getSelectedItem();
+            applySort(criteria, order);
+        });
+        frame.add(applySortButton);
+    }
+
+    private void applySort(String criteria, String order) {
+        FlashcardActions.sortCards(frame, flashcardLinkedList, this, criteria, order);
     }
 
     private void setupSidebar() {
-        String[] labels = {"Add card", "Delete card", "Edit card", "Sort cards", "Quiz"};
-
+        String[] labels = {"Add card", "Delete card", "Edit card", "Quiz", "Shuffle cards"};
         for (int i = 0; i < labels.length; i++) {
             JButton button = new JButton(labels[i]);
-            button.setBounds(50, 150 + i * 60, 200, 50);
+            button.setBounds(50, 200 + i * 60, 200, 50);
             button.setBackground(Color.BLACK);
             button.setForeground(Color.WHITE);
             button.setFont(new Font("SansSerif", Font.BOLD, 20));
+            button.setFocusPainted(false);
             frame.add(button);
 
             switch (labels[i]) {
@@ -103,9 +144,6 @@ public class FlashcardUI {
                 case "Edit card":
                     button.addActionListener(e -> FlashcardActions.editCard(frame, flashcardLinkedList, this));
                     break;
-                case "Sort cards":
-                    button.addActionListener(e -> FlashcardActions.sortCards(frame, flashcardLinkedList, this));
-                    break;
                 case "Quiz":
                     button.addActionListener(e -> {
                         List<Flashcard> cards = flashcardLinkedList.toList();
@@ -117,6 +155,15 @@ public class FlashcardUI {
                         }
                     });
                     break;
+                case "Shuffle cards":
+                    button.addActionListener(e -> {
+//                        flashcardLinkedList.shuffle();
+//                        currentNode = flashcardLinkedList.getHead();
+//                        showingKey = true;
+//                        updateCardDisplay();
+                        JOptionPane.showMessageDialog(frame, "Cards shuffled!");
+                    });
+                    break;
             }
         }
     }
@@ -126,8 +173,8 @@ public class FlashcardUI {
         cardLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));
         cardLabel.setOpaque(true);
         cardLabel.setBackground(Color.WHITE);
-        cardLabel.setBounds(300, 150, 700, 400);
-        cardLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        cardLabel.setBounds(300, 200, 700, 380);
+        cardLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         cardLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 showingKey = !showingKey;
@@ -138,21 +185,17 @@ public class FlashcardUI {
     }
 
     private void setupNavigation() {
-        ImageIcon nextIcon = new ImageIcon("src/assets/nextbtn.png");
-        ImageIcon prevIcon = new ImageIcon("src/assets/prevbtn.png");
-
-        Image nextImage = nextIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        nextIcon = new ImageIcon(nextImage);
-
-        Image prevImage = prevIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        prevIcon = new ImageIcon(prevImage);
-
-        prevButton = new JButton(prevIcon);
-        prevButton.setBounds(500, 570, 50, 50);
-        prevButton.setBorderPainted(false);
-        prevButton.setContentAreaFilled(false);
+        int y = 600;
+        prevButton = new JButton("◀");
+        prevButton.setBounds(500, y, 50, 50);
+        prevButton.setBackground(Color.WHITE);
+        prevButton.setForeground(Color.BLACK);
+        prevButton.setFont(new Font("SansSerif", Font.BOLD, 24));
         prevButton.setFocusPainted(false);
-        prevButton.setOpaque(false);
+        prevButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK, 3),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
         prevButton.addActionListener(e -> {
             LinkedNode prevNode = flashcardLinkedList.getPrev(currentNode);
             if (prevNode != null) {
@@ -163,12 +206,16 @@ public class FlashcardUI {
         });
         frame.add(prevButton);
 
-        nextButton = new JButton(nextIcon);
-        nextButton.setBounds(750, 570, 50, 50);
-        nextButton.setBorderPainted(false);
-        nextButton.setContentAreaFilled(false);
+        nextButton = new JButton("▶");
+        nextButton.setBounds(750, y, 50, 50);
+        nextButton.setBackground(Color.WHITE);
+        nextButton.setForeground(Color.BLACK);
+        nextButton.setFont(new Font("SansSerif", Font.BOLD, 24));
         nextButton.setFocusPainted(false);
-        nextButton.setOpaque(false);
+        nextButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK, 3),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
         nextButton.addActionListener(e -> {
             LinkedNode nextNode = flashcardLinkedList.getNext(currentNode);
             if (nextNode != null) {
@@ -180,8 +227,9 @@ public class FlashcardUI {
         frame.add(nextButton);
 
         indexLabel = new JLabel("", JLabel.CENTER);
-        indexLabel.setBounds(550, 570, 200, 50);
+        indexLabel.setBounds(550, y, 200, 50);
         indexLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        indexLabel.setForeground(Color.BLACK);
         frame.add(indexLabel);
     }
 
@@ -212,12 +260,13 @@ public class FlashcardUI {
     public void loadFlashcardsFromFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
+            int uploadCounter = 1;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\\|", 2);
                 if (parts.length == 2) {
                     String key = parts[0].trim();
                     String description = parts[1].trim();
-                    Flashcard card = new Flashcard(key, description);
+                    Flashcard card = new Flashcard(key, description, uploadCounter++);
                     flashcardLinkedList.add(card);
                     flashcardTrie.insert(key, description);
                 }
