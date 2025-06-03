@@ -14,13 +14,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import static ui.FlashcardActions.shuffleCards;
-
 public class FlashcardUI {
     private JFrame frame;
     private JLabel cardLabel, indexLabel;
     private JTextField searchField;
-    private JButton prevButton, nextButton;
     private boolean showingKey = true;
 
     private JComboBox<String> sortCriteriaBox;
@@ -30,6 +27,14 @@ public class FlashcardUI {
     private final FlashcardArrayList flashcardArrayList = new FlashcardArrayList();
     private final FlashcardTrie flashcardTrie = new FlashcardTrie();
     private LinkedNode currentNode;
+
+    public LinkedNode getCurrentNode() {
+        return currentNode;
+    }
+
+    public void setCurrentNode(LinkedNode node) {
+        currentNode = node;
+    }
 
     public JFrame getFrame() {
         return frame;
@@ -153,17 +158,16 @@ public class FlashcardUI {
                         if (cards.isEmpty()) {
                             JOptionPane.showMessageDialog(frame, "No flashcards available for quiz.");
                         } else {
-                            // Thêm đoạn hỏi số câu
                             String input = JOptionPane.showInputDialog(frame,
                                     "Enter the number of questions (max " + cards.size() + "):", "Quiz Settings",
                                     JOptionPane.QUESTION_MESSAGE);
-                            if (input == null) return; // user cancel
                             int numQ;
                             try {
-                                numQ = Integer.parseInt(input.trim());
+                                if (input != null || !input.equals("0")) numQ = Integer.parseInt(input.trim());
+                                else numQ = 0;
                                 if (numQ < 1 || numQ > cards.size()) throw new NumberFormatException();
                             } catch (NumberFormatException ex) {
-                                JOptionPane.showMessageDialog(frame, "Please enter a valid number (1-" + cards.size() + ").");
+                                JOptionPane.showMessageDialog(frame, "Please enter a valid number (1 - " + cards.size() + ").");
                                 return;
                             }
                             QuizDialog quizDialog = new QuizDialog(frame, cards, numQ);
@@ -193,13 +197,12 @@ public class FlashcardUI {
 
     private void setupNavigation() {
         int y = 590;
-        prevButton = new JButton("◀");
+        JButton prevButton = new JButton("◀");
         prevButton.setBounds(500, y, 50, 50);
         prevButton.setBackground(Color.WHITE);
         prevButton.setForeground(Color.BLACK);
         prevButton.setFont(new Font("SansSerif", Font.BOLD, 24));
         prevButton.setFocusPainted(false);
-        prevButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         prevButton.addActionListener(e -> {
             LinkedNode prevNode = flashcardLinkedList.getPrev(currentNode);
             if (prevNode != null) {
@@ -210,13 +213,12 @@ public class FlashcardUI {
         });
         frame.add(prevButton);
 
-        nextButton = new JButton("▶");
+        JButton nextButton = new JButton("▶");
         nextButton.setBounds(750, y, 50, 50);
         nextButton.setBackground(Color.WHITE);
         nextButton.setForeground(Color.BLACK);
         nextButton.setFont(new Font("SansSerif", Font.BOLD, 24));
         nextButton.setFocusPainted(false);
-        nextButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         nextButton.addActionListener(e -> {
             LinkedNode nextNode = flashcardLinkedList.getNext(currentNode);
             if (nextNode != null) {
@@ -247,14 +249,6 @@ public class FlashcardUI {
 
         int index = flashcardLinkedList.indexOf(currentNode);
         indexLabel.setText((index + 1) + "/" + flashcardLinkedList.getSize());
-    }
-
-    public LinkedNode getCurrentNode() {
-        return currentNode;
-    }
-
-    public void setCurrentNode(LinkedNode node) {
-        currentNode = node;
     }
 
     public void loadFlashcardsFromFile(String filename) {

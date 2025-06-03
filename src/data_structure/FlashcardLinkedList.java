@@ -54,6 +54,7 @@ public class FlashcardLinkedList {
     }
 
     public void add(Flashcard flashcard) {
+        flashcard.setUploadNumber(size + 1);
         LinkedNode node = new LinkedNode(flashcard);
         if (head == null) {
             head = tail = node;
@@ -87,32 +88,6 @@ public class FlashcardLinkedList {
         head = null;
         tail = null;
         size = 0;
-    }
-
-    public void mergeSortByKey() {
-        head = mergeSortByKey(head);
-        LinkedNode current = head;
-        tail = null;
-        while (current != null) {
-            tail = current;
-            current = current.next;
-        }
-    }
-
-    private LinkedNode mergeSortByKey(LinkedNode node) {
-        if (node == null || node.next == null) {
-            return node;
-        }
-
-        LinkedNode middle = getMiddle(node);
-        LinkedNode nextOfMiddle = middle.next;
-        middle.next = null;
-        if (nextOfMiddle != null) nextOfMiddle.prev = null;
-
-        LinkedNode left = mergeSortByKey(node);
-        LinkedNode right = mergeSortByKey(nextOfMiddle);
-
-        return sortedMergeByKey(left, right);
     }
 
     private LinkedNode getMiddle(LinkedNode node) {

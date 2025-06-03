@@ -3,7 +3,7 @@ package model;
 public class Flashcard {
     private String key;
     private String description;
-    private int uploadNumber;  // New field for upload order
+    private int uploadNumber;
 
     public Flashcard(String key, String description, int uploadNumber) {
         this.key = key;

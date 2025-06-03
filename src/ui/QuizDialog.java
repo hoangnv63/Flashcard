@@ -97,7 +97,7 @@ public class QuizDialog extends JDialog {
             return;
         }
         Flashcard card = questions.get(currentIndex);
-        questionArea.setText("What is the key of: " + card.getDescription() + "?");
+        questionArea.setText(card.getDescription());
         answerField.setText("");
         answerField.setEditable(true);
         feedbackArea.setText("");
@@ -115,6 +115,7 @@ public class QuizDialog extends JDialog {
         if (userAnswer.equals(correctAnswer)) {
             feedbackArea.setText("✅ Correct!");
             feedbackArea.setForeground(new Color(0, 130, 0));
+            score++;
         } else {
             feedbackArea.setText("❌ Incorrect!\nAnswer: " + card.getKey());
             feedbackArea.setForeground(Color.RED);
