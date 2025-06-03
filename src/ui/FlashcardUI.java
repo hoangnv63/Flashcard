@@ -153,7 +153,20 @@ public class FlashcardUI {
                         if (cards.isEmpty()) {
                             JOptionPane.showMessageDialog(frame, "No flashcards available for quiz.");
                         } else {
-                            QuizDialog quizDialog = new QuizDialog(frame, cards);
+                            // Thêm đoạn hỏi số câu
+                            String input = JOptionPane.showInputDialog(frame,
+                                    "Enter the number of questions (max " + cards.size() + "):", "Quiz Settings",
+                                    JOptionPane.QUESTION_MESSAGE);
+                            if (input == null) return; // user cancel
+                            int numQ;
+                            try {
+                                numQ = Integer.parseInt(input.trim());
+                                if (numQ < 1 || numQ > cards.size()) throw new NumberFormatException();
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(frame, "Please enter a valid number (1-" + cards.size() + ").");
+                                return;
+                            }
+                            QuizDialog quizDialog = new QuizDialog(frame, cards, numQ);
                             quizDialog.setVisible(true);
                         }
                     });

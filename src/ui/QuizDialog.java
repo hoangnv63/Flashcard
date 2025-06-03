@@ -19,7 +19,7 @@ public class QuizDialog extends JDialog {
     private final JButton nextButton;
     private final JLabel progressLabel;
 
-    public QuizDialog(JFrame parent, List<Flashcard> allCards) {
+    public QuizDialog(JFrame parent, List<Flashcard> allCards, int numQuestions) {
         super(parent, "Flashcard Quiz", true);
         setSize(500, 320);
         setLocationRelativeTo(parent);
@@ -27,8 +27,15 @@ public class QuizDialog extends JDialog {
         getContentPane().setBackground(Color.WHITE);
 
 
-        Collections.shuffle(allCards);
-        questions = new ArrayList<>(allCards.subList(0, Math.min(3, allCards.size())));
+        List<Flashcard> shuffled = new ArrayList<>(allCards);
+        Random rand = new Random();
+        for (int i = shuffled.size() - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            Flashcard temp = shuffled.get(i);
+            shuffled.set(i, shuffled.get(j));
+            shuffled.set(j, temp);
+        }
+        questions = new ArrayList<>(shuffled.subList(0, Math.min(numQuestions, shuffled.size())));
 
         questionArea = new JTextArea();
         questionArea.setFont(new Font("SansSerif", Font.BOLD, 17));
