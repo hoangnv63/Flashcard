@@ -1,75 +1,62 @@
-# Flashcards App
 
-## Overview
-This is a Java Swing-based Flashcards application designed for easy study and review. It supports creating, editing, deleting, navigating, and sorting flashcards with an intuitive graphical interface.
+# Flashcard Learning Application
+
+This Java-based flashcard application is designed to facilitate efficient and engaging self-study. It allows users to create, manage, search, sort, and quiz themselves on custom flashcards. Built with key data structures and algorithms, it emphasizes both usability and algorithmic performance.
 
 ---
 
 ## Features
-- Display flashcards showing **key** or **description** (toggle by clicking card).
-- Navigate flashcards sequentially with **previous** and **next** buttons.
-- Search flashcards by keywords.
-- Add, delete, and edit flashcards via sidebar buttons.
-- Sort flashcards by **key** or **description** (planned).
-- Random access flashcards by entering their index (planned).
-- Uses a **doubly linked list** (`FlashcardLinkedList`) as the main data structure for dynamic card management.
-- Optionally, an **array-based structure** (`FlashcardArray`) can be used for fast random access and sorting.
+
+- **Create & Edit Flashcards**: Users can input a key (term) and description (definition) to form a flashcard.
+- **Efficient Sorting**: Flashcards can be sorted by key, description, or upload order using merge sort on a custom doubly linked list.
+- **Prefix Search**: Quickly locate flashcards with a specific prefix using a Trie structure.
+- **Shuffling for Learning & Quiz**: Fisher-Yates algorithm is used to randomize cards in quizzes and self-study sessions.
+- **Interactive Quiz Mode**: Test knowledge with a quiz interface that gives instant feedback and tracks scores.
+- **Confirmation Dialogs**: Protect against accidental changes with confirm prompts before edits or deletions.
 
 ---
 
-## Architecture
+## Data Structures
 
-### Data Structures
-- **FlashcardLinkedList:** Doubly linked list storing flashcards as nodes, optimized for dynamic insertion and deletion.
-- **FlashcardArray:** Dynamic array storing flashcards, optimized for fast index-based access and sorting.
-
-### UI Components
-- Built with Java Swing.
-- Main window shows the flashcard content area.
-- Sidebar with buttons for add, delete, edit, arrange, and quiz (quiz under development).
-- Search bar at the top.
-- Navigation buttons and index display below the card.
+| Structure            | Purpose                                      |
+|----------------------|----------------------------------------------|
+| Doubly Linked List   | Manages flashcard storage and sorting        |
+| Trie                 | Supports fast prefix searching               |
+| ArrayList            | Holds and shuffles cards for quizzes/study   |
 
 ---
 
-## How to Use
-1. **Add Cards:** Use the "Add card" button to create new flashcards.
-2. **Delete/Edit Cards:** Select a card and use the respective sidebar buttons.
-3. **Navigate:** Use arrows to move to previous or next cards.
-4. **Flip Card:** Click on the card area to toggle between key and description.
-5. **Search:** Enter keywords in the search bar and press "Search" (functionality to be implemented).
-6. **Sort and Random Access:** Future features planned using `FlashcardArray`.
+## Algorithms
+
+| Algorithm                | Use Case                      | Time Complexity |
+|--------------------------|-------------------------------|-----------------|
+| Merge Sort               | Sort cards by criteria        | O(n log n)      |
+| Prefix Search (Trie)     | Efficient key lookup          | O(m), m = prefix length |
+| Fisher-Yates Shuffle     | Randomize flashcard order     | O(n)            |
+| Add/Delete (LinkedList)  | Flashcard insertion/removal   | O(1)            |
 
 ---
 
-## Design Notes
-- The app uses a linked list for efficient insertions and deletions.
-- For random access and sorting, an array-based class was designed but not fully integrated.
-- Sorting is done using merge sort.
-- The UI is built with absolute positioning (`null` layout) for precise control.
+## Educational Benefits
+
+- Encourages active recall and spaced repetition through custom quizzes.
+- Supports self-paced learning with flexible organization and shuffling.
+- Provides visual and textual reinforcement for deeper memory retention.
 
 ---
 
-## Future Improvements
-- Implement sorting UI and link with `FlashcardArray`.
-- Add quiz functionality.
-- Improve search with filtering.
-- Switch to layout managers for responsive UI.
-- Replace bubble sort with more efficient sorting algorithms.
-- Synchronize linked list and array data structures for best performance.
+## Future Development
+
+- **User Accounts & Persistence**: Connect to a database to save user progress and flashcard sets.
+- **Topic-Based Sets**: Allow users to create flashcard lists by topic or subject.
+- **Flashcard Sharing**: Enable users to share sets with others for collaborative learning.
+- **Multimedia Support**: Add image/audio capabilities to support various learning styles.
+- **Web Deployment**: Develop a web version to increase accessibility across devices.
 
 ---
 
-## Requirements
-- Java 8 or later
-- No external libraries required.
+## Technologies Used
 
----
-
-## How to Run
-
-Compile and run `FlashcardUI` as the main class.
-
-```bash
-javac FlashcardUI.java
-java FlashcardUI
+- **Java Swing**: For the GUI interface
+- **Custom Java Classes**: For implementing data structures and logic
+- **Object-Oriented Design**: Ensures modularity and scalability
