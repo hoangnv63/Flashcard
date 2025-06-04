@@ -26,6 +26,5 @@ public class FlashcardArrayList {
             flashcards.set(i, flashcards.get(j));
             flashcards.set(j, temp);
         }
-        System.out.println();
     }
 }
