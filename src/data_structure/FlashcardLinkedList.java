@@ -45,7 +45,7 @@ public class FlashcardLinkedList {
     }
 
     public LinkedNode findByKey(String key) {
-        LinkedNode node = getHead();
+        LinkedNode node = head;
         while (node != null) {
             if (node.data.getKey().equalsIgnoreCase(key)) return node;
             node = node.next;
@@ -54,6 +54,7 @@ public class FlashcardLinkedList {
     }
 
     public void add(Flashcard flashcard) {
+        flashcard.setUploadNumber(size + 1);
         LinkedNode node = new LinkedNode(flashcard);
         if (head == null) {
             head = tail = node;
@@ -89,35 +90,9 @@ public class FlashcardLinkedList {
         size = 0;
     }
 
-    public void mergeSortByKey() {
-        head = mergeSortByKey(head);
-        LinkedNode current = head;
-        tail = null;
-        while (current != null) {
-            tail = current;
-            current = current.next;
-        }
-    }
-
-    private LinkedNode mergeSortByKey(LinkedNode node) {
-        if (node == null || node.next == null) {
-            return node;
-        }
-
-        LinkedNode middle = getMiddle(node);
-        LinkedNode nextOfMiddle = middle.next;
-        middle.next = null;
-        if (nextOfMiddle != null) nextOfMiddle.prev = null;
-
-        LinkedNode left = mergeSortByKey(node);
-        LinkedNode right = mergeSortByKey(nextOfMiddle);
-
-        return sortedMergeByKey(left, right);
-    }
-
-    private LinkedNode getMiddle(LinkedNode node) {
-        if (node == null) return node;
-        LinkedNode slow = node, fast = node;
+    private LinkedNode getMiddle(LinkedNode start) {
+        if (start == null) return null;
+        LinkedNode slow = start, fast = start;
         while (fast.next != null && fast.next.next != null) {
             slow = slow.next;
             fast = fast.next.next;
@@ -125,109 +100,81 @@ public class FlashcardLinkedList {
         return slow;
     }
 
-    private LinkedNode sortedMergeByKey(LinkedNode a, LinkedNode b) {
-        if (a == null) return b;
-        if (b == null) return a;
+    private LinkedNode mergeSort(LinkedNode start, boolean ascending, String criteria) {
+        if (start == null || start.next == null) return start;
 
-        LinkedNode result;
+        LinkedNode middle = getMiddle(start);
+        LinkedNode rightStart = middle.next;
+        middle.next = null;
+        if (rightStart != null) rightStart.prev = null;
 
-        if (a.data.getKey().compareTo(b.data.getKey()) <= 0) {
-            result = a;
-            result.next = sortedMergeByKey(a.next, b);
-            if (result.next != null) result.next.prev = result;
-            result.prev = null;
-        } else {
-            result = b;
-            result.next = sortedMergeByKey(a, b.next);
-            if (result.next != null) result.next.prev = result;
-            result.prev = null;
-        }
-        return result;
+        LinkedNode leftSorted = mergeSort(start, ascending, criteria);
+        LinkedNode rightSorted = mergeSort(rightStart, ascending, criteria);
+
+        return merge(leftSorted, rightSorted, ascending, criteria);
     }
 
-    public List<Flashcard> toList() {
-        List<Flashcard> result = new ArrayList<>();
-        LinkedNode node = getHead();
-        while (node != null) {
-            result.add(node.data);
-            node = node.next;
+    private LinkedNode merge(LinkedNode leftNode, LinkedNode rightNode, boolean ascending, String criteria) {
+        if (leftNode == null) return rightNode;
+        if (rightNode == null) return leftNode;
+
+        int cmp = switch (criteria) {
+            case "key" -> leftNode.data.getKey().compareToIgnoreCase(rightNode.data.getKey());
+            case "description" -> leftNode.data.getDescription().compareToIgnoreCase(rightNode.data.getDescription());
+            case "uploadNumber" -> Integer.compare(leftNode.data.getUploadNumber(), rightNode.data.getUploadNumber());
+            default -> 0;
+        };
+        if (!ascending) cmp = -cmp;
+
+        if (cmp <= 0) {
+            leftNode.next = merge(leftNode.next, rightNode, ascending, criteria);
+            if (leftNode.next != null) leftNode.next.prev = leftNode;
+            leftNode.prev = null;
+            return leftNode;
+        } else {
+            rightNode.next = merge(leftNode, rightNode.next, ascending, criteria);
+            if (rightNode.next != null) rightNode.next.prev = rightNode;
+            rightNode.prev = null;
+            return rightNode;
         }
-        return result;
     }
 
     public void sortByKey(boolean ascending) {
         head = mergeSort(head, ascending, "key");
-        fixTailAndPrevLinks();
+        fixTail();
     }
 
     public void sortByDescription(boolean ascending) {
         head = mergeSort(head, ascending, "description");
-        fixTailAndPrevLinks();
+        fixTail();
     }
 
     public void sortByUploadNumber(boolean ascending) {
         head = mergeSort(head, ascending, "uploadNumber");
-        fixTailAndPrevLinks();
+        fixTail();
     }
 
-    private LinkedNode mergeSort(LinkedNode node, boolean ascending, String criteria) {
-        if (node == null || node.next == null) {
-            return node;
-        }
-
-        LinkedNode middle = getMiddle(node);
-        LinkedNode nextOfMiddle = middle.next;
-        middle.next = null;
-        if (nextOfMiddle != null) nextOfMiddle.prev = null;
-
-        LinkedNode left = mergeSort(node, ascending, criteria);
-        LinkedNode right = mergeSort(nextOfMiddle, ascending, criteria);
-
-        return sortedMerge(left, right, ascending, criteria);
-    }
-
-    private LinkedNode sortedMerge(LinkedNode a, LinkedNode b, boolean ascending, String criteria) {
-        if (a == null) return b;
-        if (b == null) return a;
-
-        int cmp = compareByCriteria(a.data, b.data, criteria);
-        if (!ascending) cmp = -cmp;
-
-        LinkedNode result;
-        if (cmp <= 0) {
-            result = a;
-            result.next = sortedMerge(a.next, b, ascending, criteria);
-            if (result.next != null) result.next.prev = result;
-            result.prev = null;
-        } else {
-            result = b;
-            result.next = sortedMerge(a, b.next, ascending, criteria);
-            if (result.next != null) result.next.prev = result;
-            result.prev = null;
-        }
-        return result;
-    }
-
-    private int compareByCriteria(Flashcard a, Flashcard b, String criteria) {
-        return switch (criteria) {
-            case "key" -> a.getKey().compareToIgnoreCase(b.getKey());
-            case "description" -> a.getDescription().compareToIgnoreCase(b.getDescription());
-            case "uploadNumber" -> Integer.compare(a.getUploadNumber(), b.getUploadNumber());
-            default -> 0;
-        };
-    }
-
-    private void fixTailAndPrevLinks() {
-        if (head == null) {
+    private void fixTail() {
+        LinkedNode current = head;
+        if (current == null) {
             tail = null;
             return;
         }
-        LinkedNode current = head;
         current.prev = null;
         while (current.next != null) {
             current.next.prev = current;
             current = current.next;
         }
         tail = current;
+    }
+
+    public List<Flashcard> toList() {
+        List<Flashcard> result = new ArrayList<>();
+        LinkedNode node = head;
+        while (node != null) {
+            result.add(node.data);
+            node = node.next;
+        }
+        return result;
     }
 }

@@ -1,5 +1,6 @@
 package ui;
 
+import data_structure.FlashcardArrayList;
 import model.Flashcard;
 
 import javax.swing.*;
@@ -27,14 +28,12 @@ public class QuizDialog extends JDialog {
         getContentPane().setBackground(Color.WHITE);
 
 
-        List<Flashcard> shuffled = new ArrayList<>(allCards);
-        Random rand = new Random();
-        for (int i = shuffled.size() - 1; i > 0; i--) {
-            int j = rand.nextInt(i + 1);
-            Flashcard temp = shuffled.get(i);
-            shuffled.set(i, shuffled.get(j));
-            shuffled.set(j, temp);
+        FlashcardArrayList flashcardList = new FlashcardArrayList();
+        for (Flashcard card : allCards) {
+            flashcardList.add(card);
         }
+        flashcardList.shuffle();
+        List<Flashcard> shuffled = flashcardList.getAll();
         questions = new ArrayList<>(shuffled.subList(0, Math.min(numQuestions, shuffled.size())));
 
         questionArea = new JTextArea();
@@ -97,7 +96,7 @@ public class QuizDialog extends JDialog {
             return;
         }
         Flashcard card = questions.get(currentIndex);
-        questionArea.setText("What is the key of: " + card.getDescription() + "?");
+        questionArea.setText(card.getDescription());
         answerField.setText("");
         answerField.setEditable(true);
         feedbackArea.setText("");
@@ -115,6 +114,7 @@ public class QuizDialog extends JDialog {
         if (userAnswer.equals(correctAnswer)) {
             feedbackArea.setText("✅ Correct!");
             feedbackArea.setForeground(new Color(0, 130, 0));
+            score++;
         } else {
             feedbackArea.setText("❌ Incorrect!\nAnswer: " + card.getKey());
             feedbackArea.setForeground(Color.RED);
