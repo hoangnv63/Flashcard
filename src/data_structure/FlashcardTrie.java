@@ -10,9 +10,12 @@ public class FlashcardTrie {
     public void insert(String key, String description) {
         TrieNode node = root;
         for (char ch : key.toCharArray()) {
-            node = node.children.computeIfAbsent(ch, c -> new TrieNode());
+
+            if (!node.children.containsKey(ch)) {
+                node.children.put(ch, new TrieNode());
+            }
+            node = node.children.get(ch);
         }
-        // Insert flashcard at the end of the word
         node.isEndOfWord = true;
         node.flashcard = new Flashcard(key, description);
     }
@@ -38,9 +41,9 @@ public class FlashcardTrie {
         if (node.isEndOfWord && node.flashcard != null) {
             results.add(node.flashcard.getKey());
         }
-        for (Map.Entry<Character, TrieNode> entry : node.children.entrySet()) {
-            dfs(entry.getValue(), results);
+        for (Character ch : node.children.keySet()) {
+            TrieNode childNode = node.children.get(ch); // Lấy TrieNode con
+            dfs(childNode, results);
         }
     }
-
 }

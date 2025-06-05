@@ -136,7 +136,7 @@ public class FlashcardUI {
 
             switch (labels[i]) {
                 case "Add card":
-                    button.addActionListener(e -> FlashcardActions.addCard(frame, flashcardLinkedList, this));
+                    button.addActionListener(e -> FlashcardActions.addCard(frame, flashcardLinkedList, this, flashcardTrie));
                     break;
                 case "Delete card":
                     button.addActionListener(e -> FlashcardActions.deleteCard(frame, flashcardLinkedList, this));
@@ -153,7 +153,6 @@ public class FlashcardUI {
                         if (cards.isEmpty()) {
                             JOptionPane.showMessageDialog(frame, "No flashcards available for quiz.");
                         } else {
-                            // Thêm đoạn hỏi số câu
                             String input = JOptionPane.showInputDialog(frame,
                                     "Enter the number of questions (max " + cards.size() + "):", "Quiz Settings",
                                     JOptionPane.QUESTION_MESSAGE);

@@ -44,7 +44,7 @@ public class FlashcardActions {
         return button;
     }
 
-    public static void addCard(JFrame parentFrame, FlashcardLinkedList list, FlashcardUI ui) {
+    public static void addCard(JFrame parentFrame, FlashcardLinkedList list, FlashcardUI ui, FlashcardTrie trie) {
         JDialog dialog = createDialog(parentFrame, "Add a new card");
 
         dialog.add(createLabel("Add a new card", 24, 50, 20, 300, 40));
@@ -68,6 +68,7 @@ public class FlashcardActions {
             }
 
             list.add(new Flashcard(key, desc));
+            trie.insert(key, desc);
             if (ui.getCurrentNode() == null) {
                 ui.setCurrentNode(list.getTail());
             }
